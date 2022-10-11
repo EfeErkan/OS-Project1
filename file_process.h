@@ -5,6 +5,8 @@
 #include <ctype.h>
 #include "tree.h"
 
+#define MAX_SIZE 64
+
 //DECLARATION
 char *toUpperCase(char *str);
 
@@ -28,7 +30,7 @@ void word_frequency(char *file_name)
 
     struct Node *root = NULL;
 
-    char *buffer;
+    char buffer[MAX_SIZE];
 
     while ( fscanf(fp, "%s", buffer) != EOF )
     {

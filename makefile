@@ -1,4 +1,4 @@
 run:
-	gcc pword.c
+	gcc -Wall pword.c
 	./a.out
 	rm a.out

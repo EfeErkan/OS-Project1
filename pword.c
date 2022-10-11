@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include "file_process.h"
+
 int main()
 {
     // for(int i = 0; i < 5; i++)
@@ -17,5 +19,6 @@ int main()
     // for(int i = 0; i < 5; i++)
     //     wait(NULL);
 
-    
+    word_frequency("example.txt");
+
 }
