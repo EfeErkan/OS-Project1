@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "file_process.h"
+#include "shareddefs.h"
 
 #define MIN_ARGS 4
 #define MAX_FILES 8
@@ -12,6 +13,7 @@ char files[255][MAX_FILES];
 int main(int argc, char const *argv[])
 {
     int file_num;
+    int message_size;
 
     if (argc < MIN_ARGS || argc > MIN_ARGS + MAX_FILES)
     {
@@ -21,6 +23,7 @@ int main(int argc, char const *argv[])
     else
     {
         file_num = atoi(argv[3]);
+        message_size = atoi(argv[1]);
 
         if (argc != MIN_ARGS + file_num)
         {
