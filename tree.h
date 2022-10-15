@@ -63,7 +63,7 @@ void getInorder(struct Node *node, struct item *arr, int *index)
         arr[*index] = item;
         (*index)++;
 
-        printInorder(node->right, arr, index);
+        getInorder(node->right, arr, index);
     }
 }
 

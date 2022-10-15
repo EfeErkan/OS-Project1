@@ -18,6 +18,7 @@ int main(int argc, char const *argv[])
     int file_num;
     int message_size;
     mq_t mq;
+    struct mq_attr attr;
 
     if (argc < MIN_ARGS || argc > MIN_ARGS + MAX_FILES)
     {
@@ -42,6 +43,9 @@ int main(int argc, char const *argv[])
             }
             
             mq = mq_open(MQNAME, O_CREAT | O_RDONLY);
+            attr.mq_msgsize = message_size;
+            mq_setattribute(mq, &attr, NULL);
+
             if (mq == -1) 
             {
                 perror("Message Queue cannot be opened!\n");
@@ -70,7 +74,13 @@ int main(int argc, char const *argv[])
                     int index = 0;
                     getInorder(root, word_count_arr, &index);
 
-                    
+                    for (int i = 0; i < arr_size; i++)
+                    {
+                        int size = strlen(word_count_arr[i].string);
+                        
+
+                    }
+
                     free_node(root);
                     free(word_count_arr);
 
