@@ -64,8 +64,15 @@ int main(int argc, char const *argv[])
 
                     root = word_frequency(files[i]);
 
+                    int arr_size = countNodes(root);
 
+                    struct item *word_count_arr = malloc(sizeof(struct item) * arr_size);
+                    int index = 0;
+                    getInorder(root, word_count_arr, &index);
+
+                    
                     free_node(root);
+                    free(word_count_arr);
 
                     exit(0);
                 }

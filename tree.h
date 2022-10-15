@@ -18,7 +18,9 @@ void insert(struct Node **root, char *str);
 
 void free_node(struct Node *root);
 
-void printInorder(struct Node *node);
+void getInorder(struct Node *node, struct item *arr, int *index);
+
+int countNodes(struct Node *root);
 
 
 //IMPLEMENTATION
@@ -48,14 +50,32 @@ void insert(struct Node **root, char *str)
     }
 }
 
-
-void printInorder(struct Node *node)
+void getInorder(struct Node *node, struct item *arr, int *index)
 {
     if (node != NULL)
     {
-        printInorder(node->left);
-        printf("%s %d\n", node->str, node->count);
-        printInorder(node->right);
+        getInorder(node->left, arr, index);
+
+        struct item item;
+        item.num = node->count;
+        item.string = node->str;
+
+        arr[*index] = item;
+        (*index)++;
+
+        printInorder(node->right, arr, index);
+    }
+}
+
+int countNodes(struct Node *root)
+{
+    if (root == NULL)
+    {
+        return 0;
+    }
+    else
+    {
+        return 1 + countNodes(root->left) + countNodes(root->right);
     }
 }
 

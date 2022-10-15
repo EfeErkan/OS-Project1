@@ -6,7 +6,7 @@
 struct item
 {
     int num;
-    char string[64];
+    char *string;
 }
 
 #endif
