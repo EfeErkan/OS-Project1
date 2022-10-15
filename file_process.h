@@ -10,7 +10,7 @@
 //DECLARATION
 char *toUpperCase(char *str);
 
-void word_frequency(char *file_name);
+struct Node *word_frequency(char *file_name);
 
 
 //IMPLEMENTATION
@@ -24,7 +24,7 @@ char *toUpperCase(char *str)
     return result;
 }
 
-void word_frequency(char *file_name)
+struct Node *word_frequency(char *file_name)
 {
     FILE *fp = fopen(file_name, "r");
 
@@ -37,10 +37,9 @@ void word_frequency(char *file_name)
         insert(&root, toUpperCase(buffer));
     }
 
-    printInorder(root);
-
-    free_node(root);
-
     fclose(fp);
+    
+    return root;
+
 }
 #endif

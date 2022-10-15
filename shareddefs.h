@@ -1,7 +1,6 @@
 #ifndef SHAREDDEFS
 #define SHAREDDEFS
 
-
 #define MQNAME "/MQname"
 
 struct item

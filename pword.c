@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <mqueue.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #include "file_process.h"
 #include "shareddefs.h"
@@ -15,8 +17,7 @@ int main(int argc, char const *argv[])
 {
     int file_num;
     int message_size;
-    mq_t mq_parent;
-    mq_t mq_child;
+    mq_t mq;
 
     if (argc < MIN_ARGS || argc > MIN_ARGS + MAX_FILES)
     {
@@ -40,19 +41,34 @@ int main(int argc, char const *argv[])
                 strcpy(files[i], argv[MIN_ARGS + i]); // storing the file names
             }
             
-            mq_parent = mq_open(MQNAME, O_CREATE | O_RDONLY);
+            mq = mq_open(MQNAME, O_CREAT | O_RDONLY);
+            if (mq == -1) 
+            {
+                perror("Message Queue cannot be opened!\n");
+                exit(1);
+            }
 
             for(int i = 0; i < file_num; i++)
             {  
                 pid_t n = fork();
                 if(n == 0) // child process execution
-                { 
+                {
+                    struct Node *root = NULL;
 
-                    mq_child = mq_open(MQNAME, O_CREATE | O_WRONLY);
+                    mq = mq_open(MQNAME, O_WRONLY);
+                    if (mq == -1) 
+                    {
+                        perror("Message Queue cannot be opened!\n");
+                        exit(1);
+                    }
 
+                    root = word_frequency(files[i]);
+
+
+                    free_node(root);
+
+                    exit(0);
                 }
-
-                exit(0);
             }
             // PARENT
 
