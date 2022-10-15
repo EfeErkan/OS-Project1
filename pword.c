@@ -92,9 +92,9 @@ int main(int argc, char const *argv[])
                             buff.item_array[j] = word_count_arr[j + start];
                         }
 
-                        // SEND TO MESSAGE QUEUE
                         start = i;
-
+                        // SEND MESSAGE TO QUEUE
+                        mq_send(mq, &buff, sizeof(buff), 0);
                     }
 
                     free_node(root);
