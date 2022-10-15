@@ -93,6 +93,8 @@ int main(int argc, char const *argv[])
                         }
 
                         start = i;
+                        current_msgsize = 0;
+                        
                         // SEND MESSAGE TO QUEUE
                         mq_send(mq, &buff, sizeof(buff), 0);
                     }
