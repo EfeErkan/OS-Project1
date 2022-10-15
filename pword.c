@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <mqueue.h>
 
 #include "file_process.h"
 #include "shareddefs.h"
@@ -14,6 +15,8 @@ int main(int argc, char const *argv[])
 {
     int file_num;
     int message_size;
+    mq_t mq_parent;
+    mq_t mq_child;
 
     if (argc < MIN_ARGS || argc > MIN_ARGS + MAX_FILES)
     {
@@ -36,18 +39,24 @@ int main(int argc, char const *argv[])
             {
                 strcpy(files[i], argv[MIN_ARGS + i]); // storing the file names
             }
+            
+            mq_parent = mq_open(MQNAME, O_CREATE | O_RDONLY);
 
             for(int i = 0; i < file_num; i++)
             {  
                 pid_t n = fork();
                 if(n == 0) // child process execution
                 { 
-                    // call word_frequency for each child process
-                } 
-            }
 
-            for(int i = 0; i < file_num; i++)
-                wait(NULL);
+                    mq_child = mq_open(MQNAME, O_CREATE | O_WRONLY);
+
+                }
+
+                exit(0);
+            }
+            // PARENT
+
+           
 
         }
     }
