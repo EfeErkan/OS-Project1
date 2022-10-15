@@ -9,4 +9,9 @@ struct item
     char *string;
 }
 
+struct item_buffer
+{
+    struct item *item_array;
+}
+
 #endif

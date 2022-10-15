@@ -73,11 +73,27 @@ int main(int argc, char const *argv[])
                     struct item *word_count_arr = malloc(sizeof(struct item) * arr_size);
                     int index = 0;
                     getInorder(root, word_count_arr, &index);
+                    int current_msgsize = 0;
+                    int start = 0;
 
                     for (int i = 0; i < arr_size; i++)
                     {
-                        int size = strlen(word_count_arr[i].string);
-                        
+                        if (sizeof(word_count_arr[i] + current_msgsize < message_size)
+                        {
+                            current_msgsize += sizeof(word_count_arr[i];
+                            continue;
+                        }
+
+                        struct item_buffer buff;
+                        buff.item_array = malloc(sizeof(struct item) * (i - start));
+
+                        for (int j = 0; j < i - start; j++)
+                        {
+                            buff.item_array[j] = word_count_arr[j + start];
+                        }
+
+                        // SEND TO MESSAGE QUEUE
+                        start = i;
 
                     }
 
