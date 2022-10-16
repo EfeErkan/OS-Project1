@@ -19,7 +19,7 @@ void insert(struct Node **root, char *str);
 
 void free_node(struct Node *root);
 
-// void getInorder(struct Node *node, struct item *arr, int *index);
+void getInorder(struct Node *node, struct item *arr, int *index);
 
 int countNodes(struct Node *root);
 
