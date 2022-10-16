@@ -15,7 +15,6 @@ int main(int argc, char const *argv[])
 {
     int file_num;
     int message_size;
-    int message_count = 0;
     mqd_t mq;
     struct mq_attr attr;
 
@@ -97,10 +96,9 @@ int main(int argc, char const *argv[])
 
                         start = i;
                         current_msgsize = 0;
-                        message_count++;
                         
                         // SEND MESSAGE TO QUEUE
-                        mq_send(mq, &buff, sizeof(buff), 0);
+                        mq_send(mq, (char *)&buff, sizeof(buff), 0);
                     }
 
                     free_node(root);
@@ -111,18 +109,19 @@ int main(int argc, char const *argv[])
             }
 
             // PARENT
-            struct Node* root;
-            int numRead = 0;
-            for( int i = 0; i < message_count; i++)
-            {   
-                struct item_buffer *buff;
-                numRead = mq_receive(mq, &buff, message_size, 0);
+            struct Node* root = NULL;
 
-                for(int j = 0; j < buff->arr_size; j++)
-                {
-                    insert(&root, buff->item_array[j].string);
-                }
+            struct item_buffer *buff;
+            int numRead = mq_receive(mq, (char *)&buff, message_size, 0);
+            if(numRead == -1)
+            {
+                perror("Message Queue cannot be opened!\n");
+                exit(1);
+            }
 
+            for(int j = 0; j < buff->arr_size; j++)
+            {
+                insert(&root, buff->item_array[j].string);
             }
 
             printInorder(root);
