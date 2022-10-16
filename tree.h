@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "shareddefs.h"
 
 // DECLARATION
@@ -19,7 +20,11 @@ void insert(struct Node **root, char *str);
 
 void free_node(struct Node *root);
 
+void printInorder(struct Node *root);
+
 void getInorder(struct Node *node, struct item *arr, int *index);
+
+void writeInorder(struct Node *root, FILE *fp);
 
 int countNodes(struct Node *root);
 
@@ -74,6 +79,16 @@ void printInorder(struct Node *root)
         printInorder(root->left);
         printf("%s %d\n", root->str, root->count);
         printInorder(root->right);
+    }
+}
+
+void writeInorder(struct Node *root, FILE *fp)
+{
+    if (root != NULL)
+    {
+        writeInorder(root->left, fp);
+        fprintf(fp, "%s %d\n", root->str, root->count);
+        writeInorder(root->right, fp);
     }
 }
 

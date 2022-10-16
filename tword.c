@@ -53,9 +53,9 @@ int main(int argc, char const *argv[])
             pthread_join(threads[i], NULL);
         }
 
-        printInorder(root);
-        
-        // TODO:Writing to the output file
+        FILE *fp = fopen(argv[1], "w");
+
+        writeInorder(root, fp);
 
     }
     return 0;
