@@ -13,6 +13,6 @@ struct item_buffer
 {
     struct item *item_array;
     int arr_size;
-}
+};
 
 #endif
