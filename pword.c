@@ -40,11 +40,14 @@ int main(int argc, char const *argv[])
             {
                 strcpy(files[i], argv[MIN_ARGS + i]); // storing the file names
             }
-            
-            mq = mq_open(MQNAME, O_CREAT | O_RDONLY);
-            attr.mq_msgsize = message_size;
-            mq_setattr(mq, &attr, NULL);
 
+            attr.mq_flags   = 0;
+            attr.mq_maxmsg  = 10;
+            attr.mq_msgsize = message_size;
+            attr.mq_curmsgs = 0;
+
+            mq = mq_open(MQNAME, O_CREAT | O_RDONLY, 0666, &attr);
+            
             if (mq == -1) 
             {
                 perror("Message Queue cannot be opened!\n");
