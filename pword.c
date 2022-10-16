@@ -49,7 +49,7 @@ int main(int argc, char const *argv[])
             
             if (mq == -1) 
             {
-                perror("Message Queue cannot be opened!\n");
+                perror("Parent) Message Queue cannot be opened!\n");
                 exit(1);
             }
 
@@ -60,10 +60,10 @@ int main(int argc, char const *argv[])
                 {
                     struct Node *root = NULL;
 
-                    mq = mq_open(MQNAME, O_WRONLY);
+                    mq = mq_open(MQNAME, O_CREAT | O_WRONLY, 0666, &attr);
                     if (mq == -1) 
                     {
-                        perror("Message Queue cannot be opened!\n");
+                        perror("Child) Message Queue cannot be opened!\n");
                         exit(1);
                     }
 
@@ -112,11 +112,11 @@ int main(int argc, char const *argv[])
             struct Node* root = NULL;
 
             struct item_buffer *buff;
-            char* tmp;
-            int numRead = mq_receive(mq, tmp, message_size, 0);
+            char* tmp = "";
+            int numRead = mq_receive(mq, tmp, message_size, NULL);
             if(numRead == -1)
             {
-                perror("Message Queue cannot be opened!\n");
+                perror("Message Queue cannot be received!\n");
                 exit(1);
             }
 
