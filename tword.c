@@ -44,11 +44,8 @@ int main(int argc, char const *argv[])
 
         for (int i = 0; i < file_num; i++)
         {
-            char file_name[255];
-            strcpy(file_name, files[i]);
-
             threads[i] = i;
-            pthread_create(&threads[i], NULL, file_processing, (void *) file_name);
+            pthread_create(&threads[i], NULL, file_processing, (void *) files[i]);
         }
 
         for (int i = 0; i < file_num; i++) 
