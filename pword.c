@@ -112,19 +112,23 @@ int main(int argc, char const *argv[])
             struct Node* root = NULL;
 
             struct item_buffer *buff;
-            int numRead = mq_receive(mq, (char *)&buff, message_size, 0);
+            char* tmp;
+            int numRead = mq_receive(mq, tmp, message_size, 0);
             if(numRead == -1)
             {
                 perror("Message Queue cannot be opened!\n");
                 exit(1);
             }
 
+            buff = (struct item_buffer*) tmp;
+
             for(int j = 0; j < buff->arr_size; j++)
             {
                 insert(&root, buff->item_array[j].string);
             }
 
-            printInorder(root);
+            FILE *fp = fopen(argv[2], "w");
+            writeInorder(root, fp);
         }
     }
     
