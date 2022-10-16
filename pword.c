@@ -10,6 +10,7 @@
 #define MAX_FILES 8
 
 char files[MAX_FILES][255];
+int buff_size = 0;
 
 int main(int argc, char const *argv[])
 {
@@ -40,12 +41,11 @@ int main(int argc, char const *argv[])
                 strcpy(files[i], argv[MIN_ARGS + i]); // storing the file names
             }
 
-            attr.mq_flags   = 0;
-            attr.mq_maxmsg  = 10;
+            //attr.mq_flags   = 0;
+            attr.mq_maxmsg  = 1024;
             attr.mq_msgsize = message_size;
-            attr.mq_curmsgs = 0;
 
-            mq = mq_open(MQNAME, O_CREAT | O_RDONLY, 0666, &attr);
+            mq = mq_open(MQNAME, O_CREAT | O_RDONLY, 0644, &attr);
             
             if (mq == -1) 
             {
@@ -60,7 +60,7 @@ int main(int argc, char const *argv[])
                 {
                     struct Node *root = NULL;
 
-                    mq = mq_open(MQNAME, O_CREAT | O_WRONLY, 0666, &attr);
+                    mq = mq_open(MQNAME, O_CREAT | O_WRONLY, &attr);
                     if (mq == -1) 
                     {
                         perror("Child) Message Queue cannot be opened!\n");
@@ -96,9 +96,9 @@ int main(int argc, char const *argv[])
 
                         start = i;
                         current_msgsize = 0;
-                        
+                        buff_size = sizeof(buff);
                         // SEND MESSAGE TO QUEUE
-                        mq_send(mq, (char *)&buff, sizeof(buff), 0);
+                        mq_send(mq, (char *)&buff, buff_size, 0);
                     }
 
                     free_node(root);
@@ -112,8 +112,8 @@ int main(int argc, char const *argv[])
             struct Node* root = NULL;
 
             struct item_buffer *buff;
-            char* tmp = "";
-            int numRead = mq_receive(mq, tmp, message_size, NULL);
+            char* tmp = (char *) malloc(message_size);
+            int numRead = mq_receive(mq, (char *)tmp, message_size, NULL);
             if(numRead == -1)
             {
                 perror("Message Queue cannot be received!\n");
@@ -124,7 +124,7 @@ int main(int argc, char const *argv[])
 
             for(int j = 0; j < buff->arr_size; j++)
             {
-                insert(&root, buff->item_array[j].string);
+                insert(&root, (char *) buff->item_array[j].string);
             }
 
             FILE *fp = fopen(argv[2], "w");
