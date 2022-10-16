@@ -47,6 +47,7 @@ int main(int argc, char const *argv[])
             char *file_name;
             strcpy(file_name, files[i]);
 
+            threads[i] = i;
             pthread_create(&threads[i], NULL, file_processing, (void *) file_name);
         }
 
