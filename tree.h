@@ -18,7 +18,7 @@ void insert(struct Node **root, char *str);
 
 void free_node(struct Node *root);
 
-void getInorder(struct Node *node, struct item *arr, int *index);
+// void getInorder(struct Node *node, struct item *arr, int *index);
 
 int countNodes(struct Node *root);
 
@@ -50,20 +50,30 @@ void insert(struct Node **root, char *str)
     }
 }
 
-void getInorder(struct Node *node, struct item *arr, int *index)
+// void getInorder(struct Node *node, struct item *arr, int *index)
+// {
+//     if (node != NULL)
+//     {
+//         getInorder(node->left, arr, index);
+
+//         struct item item;
+//         item.num = node->count;
+//         item.string = node->str;
+
+//         arr[*index] = item;
+//         (*index)++;
+
+//         getInorder(node->right, arr, index);
+//     }
+// }
+
+void printInorder(struct Node *root)
 {
-    if (node != NULL)
+    if (root != NULL)
     {
-        getInorder(node->left, arr, index);
-
-        struct item item;
-        item.num = node->count;
-        item.string = node->str;
-
-        arr[*index] = item;
-        (*index)++;
-
-        getInorder(node->right, arr, index);
+        printInorder(root->left);
+        printf("%s %d\n", root->str, root->count);
+        printInorder(root->right);
     }
 }
 

@@ -8,7 +8,7 @@
 #define MAX_FILES 8
 #define MAX_SIZE 64
 
-char files[255][MAX_FILES];
+char files[MAX_FILES][255];
 
 struct Node *root = NULL;
 
@@ -35,32 +35,31 @@ int main(int argc, char const *argv[])
             exit(-1);
         }
 
-        pthread_t *threads = malloc(sizeof(pthread_t) * file_num);
+        pthread_t threads[file_num];
 
         for (int i = 0; i < file_num; i++)
         {
-            strcpy(files[i], argv[MIN_ARGS + i]); // storing the file names
+            strcpy(files[i], argv[MIN_ARGS + i]);
         }
 
         for (int i = 0; i < file_num; i++)
         {
-            char *file_name;
+            char file_name[255];
             strcpy(file_name, files[i]);
 
             threads[i] = i;
             pthread_create(&threads[i], NULL, file_processing, (void *) file_name);
         }
 
-        for (int i = 0; i != listLength; i++) 
+        for (int i = 0; i < file_num; i++) 
         {
             pthread_join(threads[i], NULL);
         }
 
-
+        printInorder(root);
+        
         // TODO:Writing to the output file
 
-
-        free(threads);
     }
     return 0;
 }
