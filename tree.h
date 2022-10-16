@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "shareddefs.h"
 
 // DECLARATION
 struct Node 
@@ -50,22 +51,21 @@ void insert(struct Node **root, char *str)
     }
 }
 
-// void getInorder(struct Node *node, struct item *arr, int *index)
-// {
-//     if (node != NULL)
-//     {
-//         getInorder(node->left, arr, index);
+void getInorder(struct Node *node, struct item *arr, int *index)
+{
+    if (node != NULL)
+    {
+        getInorder(node->left, arr, index);
+        struct item item;
+        item.num = node->count;
+        item.string = node->str;
 
-//         struct item item;
-//         item.num = node->count;
-//         item.string = node->str;
+        arr[*index] = item;
+        (*index)++;
 
-//         arr[*index] = item;
-//         (*index)++;
-
-//         getInorder(node->right, arr, index);
-//     }
-// }
+        getInorder(node->right, arr, index);
+    }
+}
 
 void printInorder(struct Node *root)
 {

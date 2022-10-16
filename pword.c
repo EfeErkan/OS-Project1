@@ -4,20 +4,19 @@
 #include <mqueue.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-
 #include "file_process.h"
-#include "shareddefs.h"
 
 #define MIN_ARGS 4
 #define MAX_FILES 8
 
-char files[255][MAX_FILES];
+char files[MAX_FILES][255];
 
 int main(int argc, char const *argv[])
 {
     int file_num;
     int message_size;
-    mq_t mq;
+    int message_count = 0;
+    mqd_t mq;
     struct mq_attr attr;
 
     if (argc < MIN_ARGS || argc > MIN_ARGS + MAX_FILES)
@@ -44,7 +43,7 @@ int main(int argc, char const *argv[])
             
             mq = mq_open(MQNAME, O_CREAT | O_RDONLY);
             attr.mq_msgsize = message_size;
-            mq_setattribute(mq, &attr, NULL);
+            mq_setattr(mq, &attr, NULL);
 
             if (mq == -1) 
             {
@@ -78,14 +77,15 @@ int main(int argc, char const *argv[])
 
                     for (int i = 0; i < arr_size; i++)
                     {
-                        if (sizeof(word_count_arr[i] + current_msgsize < message_size)
+                        if (sizeof(word_count_arr[i]) + current_msgsize < message_size)
                         {
-                            current_msgsize += sizeof(word_count_arr[i];
+                            current_msgsize += sizeof(word_count_arr[i]);
                             continue;
                         }
 
                         struct item_buffer buff;
                         buff.item_array = malloc(sizeof(struct item) * (i - start));
+                        buff.arr_size = i - start;
 
                         for (int j = 0; j < i - start; j++)
                         {
@@ -94,6 +94,7 @@ int main(int argc, char const *argv[])
 
                         start = i;
                         current_msgsize = 0;
+                        message_count++;
                         
                         // SEND MESSAGE TO QUEUE
                         mq_send(mq, &buff, sizeof(buff), 0);
@@ -105,8 +106,23 @@ int main(int argc, char const *argv[])
                     exit(0);
                 }
             }
-            // PARENT
 
+            // PARENT
+            struct Node* root;
+            int numRead = 0;
+            for( int i = 0; i < message_count; i++)
+            {   
+                struct item_buffer *buff;
+                numRead = mq_receive(mq, &buff, message_size, 0);
+
+                for(int j = 0; j < buff->arr_size; j++)
+                {
+                    insert(&root, buff->item_array[j].string);
+                }
+
+            }
+
+            printInorder(root);
         }
     }
     
