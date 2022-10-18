@@ -18,13 +18,17 @@ char *trim(char *str);
 
 int main(int argc, char const *argv[])
 {
+    printf("Start");
+
     int file_num;
     int message_size;
     mqd_t mq;
     struct mq_attr attr;
 
     if(mq_unlink(MQNAME) == 0)
-        fprintf(stdout, "Message queue %s removed from system.\n", MQNAME);
+        fprintf(stdout, "Message queue %s removed from system yuppi.\n", MQNAME);
+
+    printf("Continue");
 
     if (argc < MIN_ARGS || argc > MIN_ARGS + MAX_FILES)
     {
@@ -52,7 +56,7 @@ int main(int argc, char const *argv[])
             // attr.mq_maxmsg  = 1024;
             // attr.mq_msgsize = message_size;
 
-            mq = mq_open(MQNAME, O_RDONLY | O_CREAT, 0666, NULL);
+            mq = mq_open(MQNAME, O_CREAT | O_RDONLY, 0666, NULL);
            
             
             if (mq == -1) 
@@ -70,7 +74,7 @@ int main(int argc, char const *argv[])
                 {
                     struct Node *root = NULL;
 
-                    mq = mq_open(MQNAME, O_WRONLY);
+                    mq = mq_open(MQNAME, O_CREAT | O_WRONLY, 0666, NULL);
                     if (mq == -1) 
                     {
                         perror("Child) Message Queue cannot be opened!\n");
@@ -115,12 +119,15 @@ int main(int argc, char const *argv[])
 
                         start = i;
                         current_msgsize = sizeof(int);
+                        printf("MESSAGE Send!!!");
                         // SEND MESSAGE TO QUEUE
                         mq_send(mq, (char *)&buff, sizeof(buff), 0);
                     }
 
                     free_node(root);
                     free(word_count_arr);
+
+                    mq_close(mq);
 
                     exit(0);
                 }
@@ -131,6 +138,7 @@ int main(int argc, char const *argv[])
 
             struct item_buffer *buff;
             char* tmp = (char *) malloc(attr.mq_msgsize);
+            printf("MESSAGE Receive!!!");
             int numRead = mq_receive(mq, (char *)tmp, attr.mq_msgsize, NULL);
             if(numRead == -1)
             {
@@ -147,9 +155,14 @@ int main(int argc, char const *argv[])
 
             FILE *fp = fopen(argv[2], "w");
             writeInorder(root, fp);
+
+            free_node(root);
+            free(buff);
+            free(tmp);
         }
     }
     
+    mq_close(mq);
 
     return 0;
 }
