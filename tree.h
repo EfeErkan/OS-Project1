@@ -18,6 +18,8 @@ struct Node
 
 void insert(struct Node **root, char *str);
 
+void insertWithCount(struct Node **root, char *str, int count);
+
 void free_node(struct Node *root);
 
 void printInorder(struct Node *root);
@@ -53,6 +55,32 @@ void insert(struct Node **root, char *str)
     else
     {
         (*root)->count++;
+    }
+}
+
+void insertWithCount(struct Node **root, char *str, int count)
+{
+    if ( *root == NULL ) 
+    {
+        *root = (struct Node*) malloc(sizeof(struct Node));
+        (*root)->str = (char*) malloc(strlen(str) + 1);
+
+        strcpy((*root)->str, str);
+        (*root)->left = NULL;
+        (*root)->right = NULL;
+        (*root)->count = count;
+    } 
+    else if ( strcmp(str, (*root)->str) < 0 )
+    {
+        insert( &(*root)->left, str);
+    }
+    else if ( strcmp(str, (*root)->str) > 0 )
+    {
+        insert( &(*root)->right, str);
+    }
+    else
+    {
+        (*root)->count += count;
     }
 }
 

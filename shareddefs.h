@@ -11,7 +11,8 @@ struct item
 
 struct item_buffer
 {
-    struct item *item_array;
+    char** str_arr;
+    int* count_arr;
     int arr_size;
 };
 

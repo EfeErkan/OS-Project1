@@ -4,12 +4,17 @@
 #include <mqueue.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <string.h>
 #include "file_process.h"
 
 #define MIN_ARGS 4
 #define MAX_FILES 8
 
 char files[MAX_FILES][255];
+
+char *resize(char *str);
+
+char *trim(char *str);
 
 int main(int argc, char const *argv[])
 {
@@ -79,7 +84,7 @@ int main(int argc, char const *argv[])
                     struct item *word_count_arr = malloc(sizeof(struct item) * arr_size);
                     int index = 0;
                     getInorder(root, word_count_arr, &index);
-                    int current_msgsize = 0;
+                    int current_msgsize = sizeof(int);
                     int start = 0;
 
                     for (int i = 0; i < arr_size; i++)
@@ -91,16 +96,25 @@ int main(int argc, char const *argv[])
                         }
 
                         struct item_buffer buff;
-                        buff.item_array = malloc(sizeof(struct item) * (i - start));
+
+                        char *strings[i - start];
+
+                        //buff.str_array = malloc(sizeof(struct item) * (i - start));
+
+                        buff.str_arr = strings;
+
+                        buff.count_arr = malloc(sizeof(int) * (i - start));
                         buff.arr_size = i - start;
 
                         for (int j = start; j < i - start; j++)
                         {
-                            buff.item_array[j] = word_count_arr[j + start];
+                            //buff.item_array[j] = word_count_arr[j + start];
+                            strcpy(buff.str_arr[j], resize(word_count_arr[j + start].string));
+                            buff.count_arr[j] = word_count_arr[j + start].num;
                         }
 
                         start = i;
-                        current_msgsize = 0;
+                        current_msgsize = sizeof(int);
                         // SEND MESSAGE TO QUEUE
                         mq_send(mq, (char *)&buff, sizeof(buff), 0);
                     }
@@ -128,7 +142,7 @@ int main(int argc, char const *argv[])
 
             for(int j = 0; j < buff->arr_size; j++)
             {
-                insert(&root, (char *) buff->item_array[j].string);
+                insertWithCount(&root, buff->str_arr[j], buff->count_arr[j]);
             }
 
             FILE *fp = fopen(argv[2], "w");
@@ -138,4 +152,29 @@ int main(int argc, char const *argv[])
     
 
     return 0;
+}
+
+char *resize(char *str)
+{
+    int length = strlen(str);
+    while(length % 4 != 3)
+    {
+        strcat(str, " ");
+        length++;
+    }
+
+    return str;
+}
+
+char *trim(char *str)
+{
+    int length = 0;
+    for(int i = 0; str[i] != ' '; i++)
+    {
+        length++;
+    }
+
+    char* new_str = "";
+    strncpy(str, new_str, length);
+    return new_str;
 }
