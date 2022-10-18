@@ -26,7 +26,7 @@ int main(int argc, char const *argv[])
     struct mq_attr attr;
 
     if(mq_unlink(MQNAME) == 0)
-        fprintf(stdout, "Message queue %s removed from system yuppi.\n", MQNAME);
+        fprintf(stdout, "Message queue %s removed from system.\n", MQNAME);
 
     printf("Continue");
 
@@ -55,8 +55,6 @@ int main(int argc, char const *argv[])
             // //attr.mq_flags   = 0;
             // attr.mq_maxmsg  = 1024;
             // attr.mq_msgsize = message_size;
-            
-            
 
             for(int i = 0; i < file_num; i++)
             {  
@@ -71,6 +69,8 @@ int main(int argc, char const *argv[])
                         perror("Child) Message Queue cannot be opened!\n");
                         exit(1);
                     }
+
+                    mq_getattr(mq, &attr);
 
                     root = word_frequency(files[i]);
 
@@ -132,8 +132,6 @@ int main(int argc, char const *argv[])
                 perror("Parent) Message Queue cannot be opened!\n");
                 exit(1);
             }
-
-            mq_getattr(mq, &attr);
             
             struct Node* root = NULL;
 
