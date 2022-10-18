@@ -58,6 +58,9 @@ int main(int argc, char const *argv[])
         writeInorder(root, fp);
 
     }
+
+    free_node(root);
+    
     return 0;
 }
 
