@@ -56,7 +56,7 @@ int main(int argc, char const *argv[])
             // attr.mq_maxmsg  = 1024;
             // attr.mq_msgsize = message_size;
             
-            mq_getattr(mq, &attr);
+            
 
             for(int i = 0; i < file_num; i++)
             {  
@@ -132,6 +132,8 @@ int main(int argc, char const *argv[])
                 perror("Parent) Message Queue cannot be opened!\n");
                 exit(1);
             }
+
+            mq_getattr(mq, &attr);
             
             struct Node* root = NULL;
 
