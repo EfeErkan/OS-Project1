@@ -52,7 +52,7 @@ int main(int argc, char const *argv[])
             // attr.mq_maxmsg  = 1024;
             // attr.mq_msgsize = message_size;
 
-            mq = mq_open(MQNAME, O_RDWR | O_CREAT, 0666, NULL);
+            mq = mq_open(MQNAME, O_RDONLY | O_CREAT, 0666, NULL);
            
             
             if (mq == -1) 
@@ -70,7 +70,7 @@ int main(int argc, char const *argv[])
                 {
                     struct Node *root = NULL;
 
-                    mq = mq_open(MQNAME, O_RDWR);
+                    mq = mq_open(MQNAME, O_WRONLY);
                     if (mq == -1) 
                     {
                         perror("Child) Message Queue cannot be opened!\n");
