@@ -10,7 +10,6 @@
 #define MAX_FILES 8
 
 char files[MAX_FILES][255];
-int buff_size = 0;
 
 int main(int argc, char const *argv[])
 {
@@ -18,6 +17,9 @@ int main(int argc, char const *argv[])
     int message_size;
     mqd_t mq;
     struct mq_attr attr;
+
+    if(mq_unlink(MQNAME) == 0)
+        fprintf(stdout, "Message queue %s removed from system.\n", MQNAME);
 
     if (argc < MIN_ARGS || argc > MIN_ARGS + MAX_FILES)
     {
@@ -41,17 +43,20 @@ int main(int argc, char const *argv[])
                 strcpy(files[i], argv[MIN_ARGS + i]); // storing the file names
             }
 
-            //attr.mq_flags   = 0;
-            attr.mq_maxmsg  = 1024;
-            attr.mq_msgsize = message_size;
+            // //attr.mq_flags   = 0;
+            // attr.mq_maxmsg  = 1024;
+            // attr.mq_msgsize = message_size;
 
-            mq = mq_open(MQNAME, O_CREAT | O_RDONLY, 0644, &attr);
+            mq = mq_open(MQNAME, O_RDWR | O_CREAT, 0666, NULL);
+           
             
             if (mq == -1) 
             {
                 perror("Parent) Message Queue cannot be opened!\n");
                 exit(1);
             }
+
+            mq_getattr(mq, &attr);
 
             for(int i = 0; i < file_num; i++)
             {  
@@ -60,7 +65,7 @@ int main(int argc, char const *argv[])
                 {
                     struct Node *root = NULL;
 
-                    mq = mq_open(MQNAME, O_CREAT | O_WRONLY, &attr);
+                    mq = mq_open(MQNAME, O_RDWR);
                     if (mq == -1) 
                     {
                         perror("Child) Message Queue cannot be opened!\n");
@@ -89,16 +94,15 @@ int main(int argc, char const *argv[])
                         buff.item_array = malloc(sizeof(struct item) * (i - start));
                         buff.arr_size = i - start;
 
-                        for (int j = 0; j < i - start; j++)
+                        for (int j = start; j < i - start; j++)
                         {
                             buff.item_array[j] = word_count_arr[j + start];
                         }
 
                         start = i;
                         current_msgsize = 0;
-                        buff_size = sizeof(buff);
                         // SEND MESSAGE TO QUEUE
-                        mq_send(mq, (char *)&buff, buff_size, 0);
+                        mq_send(mq, (char *)&buff, sizeof(buff), 0);
                     }
 
                     free_node(root);
@@ -112,8 +116,8 @@ int main(int argc, char const *argv[])
             struct Node* root = NULL;
 
             struct item_buffer *buff;
-            char* tmp = (char *) malloc(message_size);
-            int numRead = mq_receive(mq, (char *)tmp, message_size, NULL);
+            char* tmp = (char *) malloc(attr.mq_msgsize);
+            int numRead = mq_receive(mq, (char *)tmp, attr.mq_msgsize, NULL);
             if(numRead == -1)
             {
                 perror("Message Queue cannot be received!\n");

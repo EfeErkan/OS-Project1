@@ -63,7 +63,8 @@ void getInorder(struct Node *node, struct item *arr, int *index)
         getInorder(node->left, arr, index);
         struct item item;
         item.num = node->count;
-        item.string = node->str;
+        item.string = (char *) malloc(strlen(node->str) + 1);
+        strcpy(item.string, node->str);
 
         arr[*index] = item;
         (*index)++;
