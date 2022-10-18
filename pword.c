@@ -55,16 +55,7 @@ int main(int argc, char const *argv[])
             // //attr.mq_flags   = 0;
             // attr.mq_maxmsg  = 1024;
             // attr.mq_msgsize = message_size;
-
-            mq = mq_open(MQNAME, O_CREAT | O_RDONLY, 0666, NULL);
-           
             
-            if (mq == -1) 
-            {
-                perror("Parent) Message Queue cannot be opened!\n");
-                exit(1);
-            }
-
             mq_getattr(mq, &attr);
 
             for(int i = 0; i < file_num; i++)
@@ -134,6 +125,14 @@ int main(int argc, char const *argv[])
             }
 
             // PARENT
+            mq = mq_open(MQNAME, O_CREAT | O_RDONLY, 0666, NULL);
+
+            if (mq == -1) 
+            {
+                perror("Parent) Message Queue cannot be opened!\n");
+                exit(1);
+            }
+            
             struct Node* root = NULL;
 
             struct item_buffer *buff;
