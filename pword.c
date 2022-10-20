@@ -6,16 +6,16 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <ctype.h>
+#include "tree.h"
 
 #define MIN_ARGS 4
 #define MAX_FILES 8
 #define MQNAME "/MQNAME"
+#define STOP_SIGNAL "EOF"
 
 char files[MAX_FILES][255];
 
-// char *resize(char *str);
-
-// char *trim(char *str);
+char *toUpperCase(char *str);
 
 int main(int argc, char const *argv[])
 {
@@ -50,10 +50,6 @@ int main(int argc, char const *argv[])
                 strcpy(files[i], argv[MIN_ARGS + i]); // storing the file names
             }
 
-            // //attr.mq_flags   = 0;
-            // attr.mq_maxmsg  = 1024;
-            // attr.mq_msgsize = message_size;
-
             mq = mq_open(MQNAME, O_RDWR | O_CREAT, 0666, NULL);
             mq_getattr(mq, &mq_attr);
             int bufflen = mq_attr.mq_msgsize;
@@ -85,26 +81,62 @@ int main(int argc, char const *argv[])
                     while ( fscanf(fp, "%s", file_str) != EOF )
                     {
                         if (strlen(str) + strlen(file_str) + 1 > message_size)
-                            break;
+                        {
+                            mq_send(mq, str, message_size, 0);
+                            strcpy(str, "");
+                        }
+                            
                         strcat(str, file_str);
                         strcat(str, " ");
                     }
 
-                    mq_send(mq, str, message_size, 0);
+                    mq_send(mq, STOP_SIGNAL, message_size, 0);
+
                     mq_close(mq);
+                    fclose(fp);
                     exit(0);
                 }
 
             }
 
-            int bufferlen = mq_attr.mq_msgsize;
-            bufferp = (char *) malloc(bufferlen);
+            int stop_count = 0;
 
-            mq_receive(mq, bufferp, bufferlen, NULL);
+            struct Node *root = NULL;
 
-            printf("%s\n", bufferp);
-            printf("%ld\n", sizeof(*bufferp));
-            free(bufferp);
+            while (stop_count != file_num)
+            {
+                int bufferlen = mq_attr.mq_msgsize;
+                bufferp = (char *) malloc(bufferlen);
+
+                mq_receive(mq, bufferp, bufferlen, NULL);
+
+                if (strcmp(bufferp, STOP_SIGNAL) == 0)
+                {
+                    stop_count++;
+                }
+                else
+                {
+                    char * token = strtok(bufferp, " ");
+
+                    while( token != NULL ) 
+                    {
+                        // printf( " %s\n", token ); //printing each token
+                        insert(&root, toUpperCase(token));
+                        token = strtok(NULL, " ");
+                    }
+                    
+                }
+                free(bufferp);
+                
+            }
+
+            FILE *fp = fopen(argv[1], "w");
+
+            writeInorder(&root, fp);
+
+            fclose(fp);
+
+           
 
         }
     }
@@ -113,31 +145,13 @@ int main(int argc, char const *argv[])
 
     return 0;
 }
-    
-   
 
-
-// char *resize(char *str)
-// {
-//     int length = strlen(str);
-//     while(length % 4 != 3)
-//     {
-//         strcat(str, " ");
-//         length++;
-//     }
-
-//     return str;
-// }
-
-// char *trim(char *str)
-// {
-//     int length = 0;
-//     for(int i = 0; str[i] != ' '; i++)
-//     {
-//         length++;
-//     }
-
-//     char* new_str = "";
-//     strncpy(str, new_str, length);
-//     return new_str;
-// }
+char *toUpperCase(char *str)
+{
+    char *result = str;
+    for (int i = 0; i < strlen(str); i++)
+    {
+        result[i] = toupper(result[i]);
+    }
+    return result;
+}
