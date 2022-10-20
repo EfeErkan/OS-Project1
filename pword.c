@@ -89,7 +89,8 @@ int main(int argc, char const *argv[])
                         strcat(str, file_str);
                         strcat(str, " ");
                     }
-
+                    mq_send(mq, str, message_size, 0);
+                    
                     mq_send(mq, STOP_SIGNAL, message_size, 0);
 
                     mq_close(mq);
