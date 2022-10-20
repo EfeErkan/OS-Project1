@@ -124,20 +124,16 @@ int main(int argc, char const *argv[])
                         insert(&root, toUpperCase(token));
                         token = strtok(NULL, " ");
                     }
-                    
                 }
+
                 free(bufferp);
-                
             }
 
-            FILE *fp = fopen(argv[1], "w");
+            FILE *fp = fopen(argv[2], "w");
 
-            writeInorder(&root, fp);
+            writeInorder(root, fp);
 
             fclose(fp);
-
-           
-
         }
     }
 
