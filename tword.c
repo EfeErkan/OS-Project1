@@ -19,6 +19,7 @@ void *file_processing(void *param);
 int main(int argc, char const *argv[])
 {
     int file_num;
+    struct timeval time1, time2;
 
     if (argc < MIN_ARGS || argc > MIN_ARGS + MAX_FILES)
     {
@@ -42,6 +43,8 @@ int main(int argc, char const *argv[])
             strcpy(files[i], argv[MIN_ARGS + i]);
         }
 
+        gettimeofday(&time1, NULL);
+
         for (int i = 0; i < file_num; i++)
         {
             threads[i] = i;
@@ -58,6 +61,10 @@ int main(int argc, char const *argv[])
         writeInorder(root, fp);
 
     }
+
+    gettimeofday(&time2, NULL);
+
+    printf("Total time = %ld miliseconds\n", (time2.tv_usec - time1.tv_usec) );
 
     free_node(root);
     

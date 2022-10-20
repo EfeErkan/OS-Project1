@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include "tree.h"
 
 #define MIN_ARGS 4
@@ -24,6 +25,7 @@ int main(int argc, char const *argv[])
     int message_size;
     mqd_t mq;
     struct mq_attr mq_attr;
+    struct timeval time1, time2;
 
     if(mq_unlink(MQNAME) == 0)
         fprintf(stdout, "Message queue %s removed from system.\n", MQNAME);
@@ -49,6 +51,8 @@ int main(int argc, char const *argv[])
             {
                 strcpy(files[i], argv[MIN_ARGS + i]); // storing the file names
             }
+
+            gettimeofday(&time1, NULL);
 
             mq = mq_open(MQNAME, O_RDWR | O_CREAT, 0666, NULL);
             mq_getattr(mq, &mq_attr);
@@ -130,6 +134,7 @@ int main(int argc, char const *argv[])
                 free(bufferp);
             }
 
+            
             FILE *fp = fopen(argv[2], "w");
 
             writeInorder(root, fp);
@@ -139,6 +144,10 @@ int main(int argc, char const *argv[])
     }
 
     mq_close(mq);
+
+    gettimeofday(&time2, NULL);
+
+    printf("Total time = %ld miliseconds\n", (time2.tv_usec - time1.tv_usec) );
 
     return 0;
 }
