@@ -7,10 +7,13 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+
 #include "tree.h"
 
 #define MIN_ARGS 4
 #define MAX_FILES 8
+#define MAX_SIZE 64
+
 #define MQNAME "/MQNAME"
 #define STOP_SIGNAL "EOF"
 
@@ -26,9 +29,6 @@ int main(int argc, char const *argv[])
     mqd_t mq;
     struct mq_attr mq_attr;
     struct timeval time1, time2;
-
-    if(mq_unlink(MQNAME) == 0)
-        fprintf(stdout, "Message queue %s removed from system.\n", MQNAME);
 
     if (argc < MIN_ARGS || argc > MIN_ARGS + MAX_FILES)
     {
@@ -80,7 +80,7 @@ int main(int argc, char const *argv[])
                     
                     FILE *fp = fopen(files[i], "r");
 
-                    char file_str[64] = "";
+                    char file_str[MAX_SIZE] = "";
 
                     while ( fscanf(fp, "%s", file_str) != EOF )
                     {
@@ -121,11 +121,10 @@ int main(int argc, char const *argv[])
                 }
                 else
                 {
-                    char * token = strtok(bufferp, " ");
+                    char *token = strtok(bufferp, " ");
 
                     while( token != NULL ) 
                     {
-                        // printf( " %s\n", token ); //printing each token
                         insert(&root, toUpperCase(token));
                         token = strtok(NULL, " ");
                     }
@@ -140,14 +139,17 @@ int main(int argc, char const *argv[])
             writeInorder(root, fp);
 
             fclose(fp);
+            
+            mq_close(mq);
+
+            mq_unlink(MQNAME);
+
+            gettimeofday(&time2, NULL);
+
+            printf("Total time = %ld miliseconds\n", (time2.tv_usec - time1.tv_usec) );
+
         }
     }
-
-    mq_close(mq);
-
-    gettimeofday(&time2, NULL);
-
-    printf("Total time = %ld miliseconds\n", (time2.tv_usec - time1.tv_usec) );
 
     return 0;
 }

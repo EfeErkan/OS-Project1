@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-// #include "shareddefs.h"
 
 // DECLARATION
 struct Node 
@@ -18,18 +17,11 @@ struct Node
 
 void insert(struct Node **root, char *str);
 
-// void insertWithCount(struct Node **root, char *str, int count);
-
 void free_node(struct Node *root);
 
 void printInorder(struct Node *root);
 
-// void getInorder(struct Node *node, struct item *arr, int *index);
-
 void writeInorder(struct Node *root, FILE *fp);
-
-int countNodes(struct Node *root);
-
 
 //IMPLEMENTATION
 void insert(struct Node **root, char *str)
@@ -58,49 +50,6 @@ void insert(struct Node **root, char *str)
     }
 }
 
-// void insertWithCount(struct Node **root, char *str, int count)
-// {
-//     if ( *root == NULL ) 
-//     {
-//         *root = (struct Node*) malloc(sizeof(struct Node));
-//         (*root)->str = (char*) malloc(strlen(str) + 1);
-
-//         strcpy((*root)->str, str);
-//         (*root)->left = NULL;
-//         (*root)->right = NULL;
-//         (*root)->count = count;
-//     } 
-//     else if ( strcmp(str, (*root)->str) < 0 )
-//     {
-//         insert( &(*root)->left, str);
-//     }
-//     else if ( strcmp(str, (*root)->str) > 0 )
-//     {
-//         insert( &(*root)->right, str);
-//     }
-//     else
-//     {
-//         (*root)->count += count;
-//     }
-// }
-
-// void getInorder(struct Node *node, struct item *arr, int *index)
-// {
-//     if (node != NULL)
-//     {
-//         getInorder(node->left, arr, index);
-//         struct item item;
-//         item.num = node->count;
-//         item.string = (char *) malloc(strlen(node->str) + 1);
-//         strcpy(item.string, node->str);
-
-//         arr[*index] = item;
-//         (*index)++;
-
-//         getInorder(node->right, arr, index);
-//     }
-// }
-
 void printInorder(struct Node *root)
 {
     if (root != NULL)
@@ -118,18 +67,6 @@ void writeInorder(struct Node *root, FILE *fp)
         writeInorder(root->left, fp);
         fprintf(fp, "%s %d\n", root->str, root->count);
         writeInorder(root->right, fp);
-    }
-}
-
-int countNodes(struct Node *root)
-{
-    if (root == NULL)
-    {
-        return 0;
-    }
-    else
-    {
-        return 1 + countNodes(root->left) + countNodes(root->right);
     }
 }
 

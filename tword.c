@@ -60,14 +60,14 @@ int main(int argc, char const *argv[])
 
         writeInorder(root, fp);
 
+        gettimeofday(&time2, NULL);
+
+        printf("Total time = %ld miliseconds\n", (time2.tv_usec - time1.tv_usec) );
+
+        free_node(root);
+
     }
 
-    gettimeofday(&time2, NULL);
-
-    printf("Total time = %ld miliseconds\n", (time2.tv_usec - time1.tv_usec) );
-
-    free_node(root);
-    
     return 0;
 }
 
