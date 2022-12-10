@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include "tree.h"
 
@@ -9,6 +10,8 @@
 #define MAX_SIZE 64
 
 char files[MAX_FILES][255];
+
+pthread_mutex_t lock;
 
 struct Node *root = NULL;
 
@@ -35,6 +38,8 @@ int main(int argc, char const *argv[])
             fprintf(stderr, "File number and existing files are incompatible!\n");
             exit(-1);
         }
+
+        pthread_mutex_init(&lock, NULL);
 
         pthread_t threads[file_num];
 
@@ -64,6 +69,8 @@ int main(int argc, char const *argv[])
 
         printf("Total time = %ld miliseconds\n", (time2.tv_usec - time1.tv_usec) );
 
+        fclose(fp);
+
         free_node(root);
 
     }
@@ -79,10 +86,12 @@ void *file_processing(void *param)
 
     char buffer[MAX_SIZE];
 
+    pthread_mutex_lock(&lock);
     while ( fscanf(fp, "%s", buffer) != EOF )
     {
         insert(&root, toUpperCase(buffer));
     }
+    pthread_mutex_unlock(&lock);
 
     fclose(fp);
 
